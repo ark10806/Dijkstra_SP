@@ -4,12 +4,15 @@
 #define UNS 0
 #define TRE 1
 #define FRN 2
-#define INF 1000000000
+// #define INF 1000000000
 using namespace std;
 
 // (1, 2, 10)
 
+int INF = 100000000;
+
 class Dijkstra{
+public:
     int **adjMat;   // main에서 완성하고 넘겨받을 것임.
     int *stat;
     int *dist;
@@ -44,9 +47,29 @@ class Dijkstra{
             dist[curr] = getDist(s, curr);
         }
     }
-    void calcPath(int s){
+    void prn(){
+        int hi;
+        cin >> hi;
+        cout << endl << "----------------------" << endl;
+        for(int i=0; i<n; i++){
+            if(stat[i]==UNS){
+                cout << "UNS" << '\t';
+            }
+            if(stat[i]==TRE){
+                cout << "TRE" << '\t';
+            }
+            if(stat[i]==FRN){
+                cout << "FRN" << '\t';
+            }
+        }cout << endl;
+
+
+        cout << "----------------------" << endl;
+    }
+    void calcPath(){
         init();
         while(!isComplete()){
+            prn();
             int min_FRN = getMinIdx();
             stat[min_FRN] = TRE;
             if(dist[min_FRN] > getDist(s, min_FRN)){
@@ -79,14 +102,21 @@ class Dijkstra{
         return true;
     }
     int getMinIdx(){
-        int min = 0;
+        int min;
+        bool isFRN = false;
         for(int i=0; i<n; i++){
-            if(stat[i]==FRN && dist[i]<min){
-                min = dist[i];
+            if(stat[i]==FRN){
+                if(!isFRN){
+                    min = dist[i];
+                    isFRN = true;
+                }
+                if(dist[i] < min)
+                    min = dist[i];
             }
         }
+        return min;
     }
-    int getAdj(int node){
+    void getAdj(int node){
         clearQue();
         for(int i=0; i<n; i++){
             if(adjMat[node][i] != 0)
@@ -105,67 +135,17 @@ class Dijkstra{
         queue<int> empty;
         swap(this->adj_que, empty);
     }
-
-    
-    // void get_path(){
-    //     status_arr[0] = TRE;
-    //     int curr = 0;
-    //     while(!isComplete()){
-    //         getAdj(curr);
-
-    //     }
-    // }
-    // void getFrn(int node){
-
-    // }
-    // void getAdj(int node){
-    //     queue<int> adj_que;
-    //     for(int i=0; i<n; i++){
-    //         if(adjMat[node][i] != 0)
-    //             adj_que.push(adjMat[node][i]);
-    //     }
-
-    //     for(int i=0; i<n; i++){
-    //         if(adjMat[node][i] != 0)
-    //     }
-    // }
-    // bool isComplete(){
-    //     for(int i=0; i<n; i++){
-    //         if(status_arr[i] == FRN || status_arr[i] == UNS)
-    //             return false;
-    //     }
-    //     return true;
-    // }
 };
 
 int main(){
-    // int n, m, q;
-    // cin >> n >> m >> q;
-    // int **adjMat = new int*[n];
-    // for(int i=0; i<n; i++){
-    //     adjMat[i] = new int[n];
-    // }
-
-    // int x, y, w;
-    // for(int i=0; i<m; i++){
-    //     cin >> x >> y >> w;
-    //     adjMat[x][y] = w;
-    // }
-
-    // for(int i=0; i<n; i++){
-    //     for(int j=0; j<n; j++){
-    //         cout << adjMat[i][j] << ' ';
-    //     }
-    //     cout << endl;
-    // }
     int n = 9;
     int **adjMat = new int*[n];
     for(int i=0; i<n; i++){
         adjMat[i] = new int[n];
         memset(adjMat[i], 0, sizeof(int)*n);
     }
-    adjMat = {{0,2,INF,INF,INF,9,5,INF,INF},
-        {2,0,4,INF,INF,INF,6,INF,INF},
+
+    int arr2d[9][9] = {{0,2,INF,INF,INF,9,5,INF,INF},
         {2,0,4,INF,INF,INF,6,INF,INF},
         {INF,4,0,2,INF,INF,INF,5,INF},
 
@@ -176,6 +156,19 @@ int main(){
         {5,6,INF,INF,INF,INF,0,5,2},
         {INF,INF,5,1,INF,INF,5,0,4},
         {INF,INF,INF,INF,3,1,2,4,0}};
+
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            adjMat[i][j] = arr2d[i][j];
+            if(adjMat[i][j] == INF)
+                cout << "INF" << '\t';
+            else
+                cout << adjMat[i][j] << '\t';
+        }cout << endl;
+    }
+
+    Dijkstra di(adjMat, n, 0);
+    di.calcPath();
 
     return 0;
 }
