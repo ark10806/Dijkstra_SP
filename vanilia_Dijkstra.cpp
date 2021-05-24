@@ -45,12 +45,27 @@ class Dijkstra{
         }
     }
     void calcPath(int s){
-        init(s);
+        init();
         while(!isComplete()){
             int min_FRN = getMinIdx();
             stat[min_FRN] = TRE;
-            if(dist[min_FRN] > getDist(s, ))
+            if(dist[min_FRN] > getDist(s, min_FRN)){
+                decreasekey(min_FRN, getDist(s, min_FRN));
+                getAdj(min_FRN);
+                while(!adj_que.empty()){
+                    int curr = adj_que.front(); adj_que.pop();
+                    stat[curr] = FRN;
+                    pred[curr] = min_FRN;
+                    dist[curr] = getDist(s, curr);
+                }
+            }
         }
+        for(char c='A'; c<='I'; c++){
+            cout << c << '\t';
+        }cout << endl;
+        for(int i=0; i<n; i++){
+            cout << dist[i] << '\t';
+        }cout << endl;
     }
     void decreasekey(int idx, int distance){
         dist[idx] = distance;
@@ -124,26 +139,43 @@ class Dijkstra{
 };
 
 int main(){
-    int n, m, q;
-    cin >> n >> m >> q;
+    // int n, m, q;
+    // cin >> n >> m >> q;
+    // int **adjMat = new int*[n];
+    // for(int i=0; i<n; i++){
+    //     adjMat[i] = new int[n];
+    // }
+
+    // int x, y, w;
+    // for(int i=0; i<m; i++){
+    //     cin >> x >> y >> w;
+    //     adjMat[x][y] = w;
+    // }
+
+    // for(int i=0; i<n; i++){
+    //     for(int j=0; j<n; j++){
+    //         cout << adjMat[i][j] << ' ';
+    //     }
+    //     cout << endl;
+    // }
+    int n = 9;
     int **adjMat = new int*[n];
     for(int i=0; i<n; i++){
         adjMat[i] = new int[n];
+        memset(adjMat[i], 0, sizeof(int)*n);
     }
+    adjMat = {{0,2,INF,INF,INF,9,5,INF,INF},
+        {2,0,4,INF,INF,INF,6,INF,INF},
+        {2,0,4,INF,INF,INF,6,INF,INF},
+        {INF,4,0,2,INF,INF,INF,5,INF},
 
-    int x, y, w;
-    for(int i=0; i<m; i++){
-        cin >> x >> y >> w;
-        adjMat[x][y] = w;
-    }
+        {INF,INF,2,0,1,INF,INF,1,INF},
+        {INF,INF,INF,1,0,6,INF,INF,3},
+        {9,INF,INF,INF,6,0,INF,INF,1},
 
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            cout << adjMat[i][j] << ' ';
-        }
-        cout << endl;
-    }
-
+        {5,6,INF,INF,INF,INF,0,5,2},
+        {INF,INF,5,1,INF,INF,5,0,4},
+        {INF,INF,INF,INF,3,1,2,4,0}};
 
     return 0;
 }
