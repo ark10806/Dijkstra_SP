@@ -35,22 +35,14 @@ public:
             pred[i] = -1;
         }
     }
-    void init(){
-        stat[s] = TRE;
-        dist[s] = 0;
-        getAdj(s);
-        int curr;
-        while(!adj_que.empty()){
-            curr = adj_que.front(); adj_que.pop();
-            stat[curr] = FRN;
-            pred[curr] = s;
-            dist[curr] = getDist(s, curr);
-        }
-    }
     void prn(){
-        int hi;
-        cin >> hi;
+        string hi;
+        getline(cin, hi);
+
         cout << endl << "----------------------" << endl;
+        for(char c='A'; c<='I'; c++){
+            cout << c << '\t';
+        }cout << endl;
         for(int i=0; i<n; i++){
             if(stat[i]==UNS){
                 cout << "UNS" << '\t';
@@ -63,32 +55,55 @@ public:
             }
         }cout << endl;
 
+        for(int i=0; i<n; i++){
+            if(dist[i] == INF){
+                cout << "INF" << '\t';
+            }
+            else{
+                cout << dist[i] << '\t';
+            }
+        }
+
 
         cout << "----------------------" << endl;
     }
+    void init(){
+        stat[s] = TRE;
+        dist[s] = 0;
+        getAdj(s);
+        int curr;
+        while(!adj_que.empty()){
+            curr = adj_que.front(); adj_que.pop();
+            stat[curr] = FRN;
+            pred[curr] = s;
+            dist[curr] = getDist(s, curr);
+        }
+    }
+    
     void calcPath(){
         init();
         while(!isComplete()){
             prn();
             int min_FRN = getMinIdx();
             stat[min_FRN] = TRE;
-            if(dist[min_FRN] > getDist(s, min_FRN)){
-                decreasekey(min_FRN, getDist(s, min_FRN));
-                getAdj(min_FRN);
-                while(!adj_que.empty()){
-                    int curr = adj_que.front(); adj_que.pop();
+            // if(dist[min_FRN] > getDist(s, min_FRN)){
+            //     decreasekey(min_FRN, getDist(s, min_FRN));
+            // }
+            getAdj(min_FRN);
+            int curr;
+            while(!adj_que.empty()){
+                curr = adj_que.front(); adj_que.pop();
+                if(stat[curr] == UNS)
                     stat[curr] = FRN;
-                    pred[curr] = min_FRN;
-                    dist[curr] = getDist(s, curr);
+                pred[curr] = min_FRN;
+                if(dist[curr] > getDist(s, curr)){
+                    decreasekey(curr, getDist(s, curr));
+                    // dist[curr] = getDist(s, curr);
                 }
             }
         }
-        for(char c='A'; c<='I'; c++){
-            cout << c << '\t';
-        }cout << endl;
-        for(int i=0; i<n; i++){
-            cout << dist[i] << '\t';
-        }cout << endl;
+        cout << endl << "RESULT#########" << endl;
+        prn();
     }
     void decreasekey(int idx, int distance){
         dist[idx] = distance;
@@ -102,34 +117,38 @@ public:
         return true;
     }
     int getMinIdx(){
-        int min;
+        int minIdx;
         bool isFRN = false;
         for(int i=0; i<n; i++){
             if(stat[i]==FRN){
                 if(!isFRN){
-                    min = dist[i];
+                    minIdx = i;
                     isFRN = true;
                 }
-                if(dist[i] < min)
-                    min = dist[i];
+                if(dist[i] < dist[minIdx])
+                    minIdx = i;
             }
         }
-        return min;
+        cout << "min: " << (char)(minIdx+'A') << endl;
+        return minIdx;
     }
     void getAdj(int node){
         clearQue();
+        cout << "adjs: ";
         for(int i=0; i<n; i++){
-            if(adjMat[node][i] != 0)
+            if(adjMat[node][i] != INF && i!=node && stat[i]==UNS){
                 adj_que.push(i);
-        }
+                cout << (char)(i+'A') << '\t';
+            }
+        }cout << endl;
     }
     int getDist(int src, int dst){
-        // stV: starting V   src: Terminal member of TRE     dst: FRN
+        //src: Terminal member of TRE     dst: FRN
         int pred_idx = pred[dst];
         if(pred_idx == -1){
             pred_idx = src;
         }
-        return dist[pred_idx] + adjMat[src][dst];
+        return dist[pred_idx] + adjMat[pred_idx][dst];
     }
     void clearQue(){
         queue<int> empty;
@@ -145,27 +164,34 @@ int main(){
         memset(adjMat[i], 0, sizeof(int)*n);
     }
 
-    int arr2d[9][9] = {{0,2,INF,INF,INF,9,5,INF,INF},
-        {2,0,4,INF,INF,INF,6,INF,INF},
-        {INF,4,0,2,INF,INF,INF,5,INF},
+    int arr2d[9][9] =   {{0,2,INF,INF,INF,9,5,INF,INF},
+                        {2,0,4,INF,INF,INF,6,INF,INF},
+                        {INF,4,0,2,INF,INF,INF,5,INF},
 
-        {INF,INF,2,0,1,INF,INF,1,INF},
-        {INF,INF,INF,1,0,6,INF,INF,3},
-        {9,INF,INF,INF,6,0,INF,INF,1},
+                        {INF,INF,2,0,1,INF,INF,1,INF},
+                        {INF,INF,INF,1,0,6,INF,INF,3},
+                        {9,INF,INF,INF,6,0,INF,INF,1},
 
-        {5,6,INF,INF,INF,INF,0,5,2},
-        {INF,INF,5,1,INF,INF,5,0,4},
-        {INF,INF,INF,INF,3,1,2,4,0}};
+                        {5,6,INF,INF,INF,INF,0,5,2},
+                        {INF,INF,5,1,INF,INF,5,0,4},
+                        {INF,INF,INF,INF,3,1,2,4,0}};
+
+    int cnt = 0;
 
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             adjMat[i][j] = arr2d[i][j];
             if(adjMat[i][j] == INF)
-                cout << "INF" << '\t';
-            else
-                cout << adjMat[i][j] << '\t';
+                cout << "F" << ' ';
+            else{
+                cout << adjMat[i][j] << ' ';
+                if(adjMat[i][j]!=0){
+                    cnt++;
+                }
+            }
         }cout << endl;
     }
+    cout << "cnt: " << cnt << endl;
 
     Dijkstra di(adjMat, n, 0);
     di.calcPath();
