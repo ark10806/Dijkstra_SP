@@ -99,9 +99,6 @@ public:
             adjMat[dst][src] = distance;
         }
     }
-    int** get_adjMat(){
-        return adjMat;
-    }
 };
 
 class Dijkstra{
