@@ -224,7 +224,7 @@ int main(){
     cout <<"hii" << endl;
 
     Dijkstra di(adjMat, n);
-    di.calcPath(1);
+    di.calcPath(3);
 
     return 0;
 }

@@ -69,17 +69,17 @@ public:
     void make_roads(int src_zip, int dst_zip, int distance){
         int src = zip2idx.find(src_zip)->second;
         int dst = zip2idx.find(dst_zip)->second;
-        if(isImmersed[dst])
+        if(isImmersed[src] || isImmersed[dst]){
             adjMat[src][dst] = INF;
-        else
+            adjMat[dst][src] = INF;
+        }
+        else{
             adjMat[src][dst] = distance;
+            adjMat[dst][src] = distance;
+        }
     }
-    string get_name(int num, bool isZip){
-        int zip;
-        if(isZip)
-            zip = zip2idx.find(num)->second;
-        else
-            zip = idx2zip[num];
+    string get_name(int idx){
+        int zip = idx2zip[idx];
         return zip2name.find(zip)->second;
     }
     int** get_adjMat(){
@@ -98,10 +98,12 @@ public:
     int s;
     int treeNum;
     queue<int> adj_que;
+    Geometry* geo;
 
-    Dijkstra(int **adjMat, int n){
+    Dijkstra(int **adjMat, int n, Geometry* geo){
         this->adjMat = adjMat;
         this->n = n;
+        this->geo = geo;
     }
     void prn(){
         for(char c='A'; c<='I'; c++){
@@ -155,8 +157,6 @@ public:
     void calcPath(int s, int terminal){
         init(s);
         while(!isComplete()){
-            // string hi;
-            // getline(cin, hi);
             int min_FRN = getMinIdx();
             stat[min_FRN] = TRE;
             treeNum++;
@@ -174,18 +174,18 @@ public:
             }
         }
     }
-    void getPath(int node, Geometry* geo){
+    void getPath(int node){
         int curr = node;
         stack<int> path;
         cout << getTreeNum() << ' ';
-        while(curr != END){
+        while(curr != s){
             path.push(pred[curr]);
             curr = pred[curr];
         }
         while(!path.empty()){
-            cout << geo->get_name(path.top(), false) << ' ';
+            cout << geo->idx2zip[path.top()] << ' ';
             path.pop();
-        }cout << endl;
+        }cout << geo->idx2zip[node] << endl;
     }
     void decreasekey(int idx, int distance){
         dist[idx] = distance;
@@ -208,6 +208,11 @@ public:
                 }
                 if(dist[i] < dist[minIdx])
                     minIdx = i;
+                else if(dist[i] == dist[minIdx]){
+                    int a = geo->idx2zip[i];
+                    int b = geo->idx2zip[minIdx];
+                    if(a < b) minIdx = i;
+                }
             }
         }
         return minIdx;
@@ -245,7 +250,34 @@ int main(){
     bool isWet;
 
     cin >> n >> m >> q;
+    // n = 9;
+    // m = 11;
+    // q = 7;
     Geometry* geo = new Geometry(n);
+    // geo->insert_places(0, "a", false);
+    // geo->insert_places(1, "b", false);
+    // geo->insert_places(2, "c", false);
+
+    // geo->insert_places(3, "d", false);
+    // geo->insert_places(4, "e", false);
+    // geo->insert_places(5, "f", false);
+
+    // geo->insert_places(6, "g", false);
+    // geo->insert_places(7, "h", false);
+    // geo->insert_places(8, "i", true);
+
+    // geo->make_roads(0,6,450);
+    // geo->make_roads(0,1,1000);
+    // geo->make_roads(6,5,950);
+    // geo->make_roads(5,1,500);
+    // geo->make_roads(1,2,5000);
+    // geo->make_roads(1,3,900);
+    // geo->make_roads(2,3,3);
+    // geo->make_roads(2,4,2);
+    // geo->make_roads(7,0,3);
+    // geo->make_roads(7,8,1);
+    // geo->make_roads(8,5,1);
+
     for(int i=0; i<n; i++){
         cin.ignore();
         cin >> src >> name >> isWet;
@@ -256,25 +288,29 @@ int main(){
         cin >> src >> dst >> distance;
         geo->make_roads(src, dst, distance);
     }
-    Dijkstra dik(geo->get_adjMat(), n);
+    Dijkstra dik(geo->get_adjMat(), n, geo);
     for(int i=0; i<q; i++){
         cin >> oper >> src >> dst;
         src = geo->zip2idx.find(src)->second;
         dst = geo->zip2idx.find(dst)->second;
+        if(geo->isImmersed[src] || geo->isImmersed[dst]){
+            cout << "None" << endl;
+            continue;
+        }
 
         if(oper == "A"){
             dik.calcPath(src, dst);
             if(dik.getFinalDist(dst) > INF)
                 cout << "None" << endl;
             else
-                cout << dik.getTreeNum() << dik.getFinalDist(dst) << geo->get_name(src, true) << geo->get_name(dst, true) << endl;
+                cout << dik.getTreeNum() << ' ' << dik.getFinalDist(dst) << ' ' << geo->get_name(src) << ' ' << geo->get_name(dst) << endl;
         }
         else if(oper == "B"){
             dik.calcPath(src, dst);
             if(dik.getFinalDist(dst) > INF)
                 cout << "None" << endl;
             else
-                dik.getPath(dst, geo);
+                dik.getPath(dst);
         }
         else
             cout << "wrong operations" << endl;
