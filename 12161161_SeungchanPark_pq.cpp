@@ -2,7 +2,6 @@
 #include <queue>
 #include <stack>
 #include <map>
-#include <queue>
 #include <string.h>
 #define UNS 0
 #define TRE 1
@@ -50,7 +49,6 @@ class Geometry{
 */
 public:
     int **adjMat;
-    priority_queue<int> pq;
     // map<int, string> zip2name;
     string* idx2name;
     map<int, int> zip2idx;
