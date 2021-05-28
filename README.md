@@ -21,4 +21,4 @@ but it is advantageous to always use **Priority Queue** from a spacial point of 
 On the other hand, if the number of edges is very sparse, it is recommanded to use **Priority Queue** from any point of view.
 
 <span style="color:yellow">노란 글씨입니다.</span>
-<font color='dodgerblue'> 예쁜 파랑 </font>
+<mark style='background-color: #fff5b1'> 연한 노랑 </mark>
