@@ -15,7 +15,7 @@ And it only uses O(|E|)-spaces.
     it uses approximately 20MB of memory in the test4.
 
 ---
-When there are very many edges, O(|E|) ∈  O(|V|^2), so it is appropriate to use **Adjacency Matrix** in terms of execution time, 
+When there are tremendous number of edges, O(|E|) ∈  O(|V|^2), so it is appropriate to use **Adjacency Matrix** in terms of execution time, 
 but it is advantageous to always use **Priority Queue** from a spacial point of view.
 
-On the other hand, if the number of edges is very sparse, it is recommanded to use **Priority Queue** from any point of view.
+On the other hand, if the number of edges is sparse, it is recommanded to use **Priority Queue** from any point of view.
